@@ -46,31 +46,32 @@ t_vec		ft_normalize(t_vec *n)
 
 
 
-int intersection(t_ray *r, t_sphere *s, float *t)
-{
-	float A = vectorDot(&r->dir, &r->dir);
-	t_vec dist = vectorSub(&r->start, &s->pos);
-	float B = 2 * vectorDot(&r->dir, &dist);
-	float C = vectorDot(&dist, &dist) - (s->radius * s->radius);
-	float discr = B * B - 4 * A * C;
-	if (discr < 0)
-		return (0);
-	else
-	{
-		discr = sqrt(discr);
-		float t0 = -B - discr;
-		float t1 = -B + discr;
-		*t = min(t0, t1);
-		return (discr);
-	}
-}
+// int intersection(t_ray *r, t_sphere *s, float *t)
+// {
+// 	float A = vectorDot(&r->dir, &r->dir);
+// 	t_vec dist = vectorSub(&r->start, &s->pos);
+// 	float B = 2 * vectorDot(&r->dir, &dist);
+// 	float C = vectorDot(&dist, &dist) - (s->radius * s->radius);
+// 	float discr = B * B - 4 * A * C;
+// 	if (discr < 0)
+// 		return (0);
+// 	else
+// 	{
+// 		discr = sqrt(discr);
+// 		float t0 = -B - discr;
+// 		float t1 = -B + discr;
+// 		*t = min(t0, t1);
+// 		return (discr);
+// 	}
+// }
+// не рабочая интерсекция для сферы
 
 int createRGB(int r, int g, int b)
 {
    return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
 }
 
-void	raytrace(t_rtv *rtv, t_read *read)
+void	sphere(t_rtv *rtv, t_read *read)
 {
 	t_ray r;
 	int x;
@@ -197,6 +198,55 @@ void	raytrace(t_rtv *rtv, t_read *read)
 }
 
 
+//
+// void		plane(t_rtv *rtv, t_read *read)
+// {
+// 	t_ray r;
+// 	int x;
+// 	int y;
+// 	float t;
+// 	int k;
+//
+// 	r.dir.z = read->camdir.z;
+//
+// 	r.start.z = read->campos.z;
+// 	r.start.x = read->campos.x;
+// 	r.start.y = read->campos.y;
+// 	y = -1;
+// 	while (++y <= H)
+// 	{
+// 		float winy = 2. * (double)y / (double)H - 1;
+// 		r.dir.y = (read->camdir.y + 1.0 * winy);
+// 		x = -1;
+// 		while (++x <= W)
+// 		{
+// 			float winx = 2. * (double)x / (double)W - 1.;
+// 			r.dir.x = (read->camdir.x + 1.0 * winx);
+//
+// 			k = -1;
+// 			while (++k < read->p)
+// 			{
+// 				t = -1;
+// 				t = vectorDot(read->plane[k]->norm, 1);
+// 				if (inter > 0.00001F)
+// 				{
+// 					t_ray refl;
+//
+// 					refl.x = r.start.x + r.dir.x * t;
+// 					refl.y = r.start.y + r.dir.y * t;
+// 					refl.z = r.start.z + r.dir.z * t;
+//
+//
+// 				}
+//
+// 			}
+//
+// 		}
+// 	}
+// }
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -207,9 +257,10 @@ int main(int argc, char **argv)
 
 		read = (t_read *)malloc(sizeof(t_read));
 		rtv = (t_rtv *)malloc(sizeof(t_rtv));
-		init(rtv);
 		read_scene(read, argv[1]);
-		raytrace(rtv, read);
+		init(rtv);
+		sphere(rtv, read);
+	//	plane(rtv, read);
 		mlx_loop_hook(rtv->mlx, hook, rtv);
 		mlx_loop(rtv->mlx);
 	}

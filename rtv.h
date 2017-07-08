@@ -46,6 +46,14 @@ typedef struct	s_sphere
 }				t_sphere;
 
 
+typedef	struct	s_plane
+{
+	t_col color;
+	t_vec pos;
+	t_vec norm;
+}				t_plane;
+
+
 typedef struct	s_ray
 {
 	t_vec start;
@@ -70,7 +78,9 @@ typedef struct	s_read
 	t_light *light;
 	int l;
 	int s;
+	int p;
 	t_sphere *sphere;
+	t_plane *plane;
 }				t_read;
 
 
