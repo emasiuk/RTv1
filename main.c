@@ -226,26 +226,19 @@ void		plane(t_rtv *rtv, t_read *read)
 			k = -1;
 			while (++k < read->p)
 			{
-				t_vec one;
-
-				one.x = 1;
-				one.y = 1;
-				one.z = 1;
-
-				t = -1;
 				float inter = vectorDot(&r.dir, &read->plane[k].norm);
-				if (inter > 0)
+				if (fabs(inter) > 0.0001f)
 				{
-
+					t = -1;
 					t_vec unknow;
 
-					unknow.x = read->plane[k].pos.x - r.dir.x * inter;
-					unknow.y = read->plane[k].pos.y - r.dir.y * inter;
-					unknow.z = read->plane[k].pos.z - r.dir.z * inter;
+					unknow.x = read->plane[k].pos.x - r.start.x;
+					unknow.y = read->plane[k].pos.y - r.start.y;
+					unknow.z = read->plane[k].pos.z - r.start.z;
 
-					t = (vectorDot(&unknow, &read->plane[k].norm)) / inter;
-
-					if (t > 0)
+					t = vectorDot(&unknow, &read->plane[k].norm);
+					t /= inter;
+					if (t >= 0)
 					{
 
 						t_vec refl;
@@ -256,9 +249,9 @@ void		plane(t_rtv *rtv, t_read *read)
 
 						t_vec norm;
 
-						norm.x = (refl.x - read->plane[k].pos.x);
-						norm.y = (refl.y - read->plane[k].pos.y);
-						norm.z = (refl.z - read->plane[k].pos.z);
+						norm.x = refl.x - read->plane[k].pos.x;
+						norm.y = refl.y - read->plane[k].pos.y;
+						norm.z = refl.z - read->plane[k].pos.z;
 
 						t_vec b = ft_normalize(&norm);
 
@@ -275,15 +268,16 @@ void		plane(t_rtv *rtv, t_read *read)
 
 							t_vec light;
 
-							light.x = (read->light[j].pos.x - refl.x);
-							light.y = (read->light[j].pos.y - refl.y);
-							light.z = (read->light[j].pos.z - refl.z);
+							light.x = read->light[j].pos.x - refl.x;
+							light.y = read->light[j].pos.y - refl.y;
+							light.z = read->light[j].pos.z - refl.z;
 
 							t_vec a = ft_normalize(&light);
 
 							double dt = vectorDot(&a, &b);
+							// printf("%f\n", dt);
+							dt = fabs(dt);
 
-							printf("%f\n", dt);
 
 							// red = read->plane[k].color.r * dt;
 							// green = read->plane[k].color.g * dt;
@@ -307,9 +301,9 @@ void		plane(t_rtv *rtv, t_read *read)
 							// rtv->b = sqrt(pow(blue, 2) + pow(rtv->b, 2));
 
 
-							rtv->r = read->sphere[k].color.r * dt;
-							rtv->g = read->sphere[k].color.g * dt;
-							rtv->b = read->sphere[k].color.b * dt;
+							rtv->r = 0.5 *(read->plane[k].color.r + 255 * dt);
+							rtv->g = 0.5 * (read->plane[k].color.g + 255 * dt);
+							rtv->b = 0.5 * (read->plane[k].color.b + 255 * dt);
 
 
 							if (rtv->r > 255)
@@ -326,6 +320,8 @@ void		plane(t_rtv *rtv, t_read *read)
 							rtv->b = 255;
 							else if (rtv->b < 0)
 							rtv->b = 0;
+
+
 
 						}
 					}
